@@ -1,0 +1,7 @@
+Hello!
+
+aiohttp → Async HTTP requests
+psycopg2 → PostgreSQL connection
+confluent_kafka → Kafka integration
+multiprocessing-logging → For multiprocessing logs
+
