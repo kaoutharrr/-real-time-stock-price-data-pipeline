@@ -35,5 +35,5 @@ services:
       KAFKA_BROKER: "kafka:9092"
     volumes:
       - .:/app
-    command: ["python", "main.py"]
+    # command: ["python", "main.py"]/
     
