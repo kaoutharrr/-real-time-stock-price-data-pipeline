@@ -5,3 +5,4 @@ psycopg2 → PostgreSQL connection
 confluent_kafka → Kafka integration
 multiprocessing-logging → For multiprocessing logs
 
+api key = XO6KHCWT5Z5GBU2H
