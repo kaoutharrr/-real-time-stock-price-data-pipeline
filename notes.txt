@@ -6,3 +6,6 @@ confluent_kafka → Kafka integration
 multiprocessing-logging → For multiprocessing logs
 
 api key = XO6KHCWT5Z5GBU2H
+
+
+BASE_URL: This is the base URL where we send our requests. Every API request will go to this URL with different parameters.

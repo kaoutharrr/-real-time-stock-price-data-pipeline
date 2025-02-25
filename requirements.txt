@@ -2,3 +2,7 @@ aiohttp
 psycopg2
 confluent_kafka
 multiprocessing-logging
+kafka-python
+aiokafka
+asyncpg
+

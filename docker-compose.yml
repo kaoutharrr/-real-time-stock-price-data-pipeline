@@ -1,3 +1,42 @@
+# services:
+#   postgres:
+#     image: postgres:latest
+#     container_name: postgres_db
+#     environment:
+#       POSTGRES_USER: user
+#       POSTGRES_PASSWORD: 123
+#       POSTGRES_DB: data
+#     ports:
+#       - "5432:5432"
+#     volumes:
+#       - postgres_data:/var/lib/postgresql/data
+
+#   zookeeper:
+#     image: confluentinc/cp-zookeeper:latest
+#     container_name: zookeeper
+#     environment:
+#       ZOOKEEPER_CLIENT_PORT: 2181
+#     ports:
+#       - "2181:2181"
+#     volumes:
+#       - zookeeper_data:/var/lib/zookeeper
+
+#   kafka:
+#     image: confluentinc/cp-kafka:latest
+#     container_name: kafka_broker
+#     environment:
+#       KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
+#       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+#       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+#     ports:
+#       - "9092:9092"
+#     volumes:
+#       - kafka_data:/var/lib/kafka/data
+
+
+
+version: '3.8'
+
 services:
   postgres:
     image: postgres:latest
@@ -8,6 +47,19 @@ services:
       POSTGRES_DB: data
     ports:
       - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    container_name: zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+    ports:
+      - "2181:2181"
+    volumes:
+      - zookeeper_data:/var/lib/zookeeper
+
   kafka:
     image: confluentinc/cp-kafka:latest
     container_name: kafka_broker
@@ -17,23 +69,113 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
     ports:
       - "9092:9092"
-  zookeeper:
-    image: confluentinc/cp-zookeeper:latest
-    container_name: zookeeper
-    environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
-    ports:
-      - "2181:2181"
-  app:
-    build : .
-    container_name: learn_python
-    depends_on :
-      - postgres
+    volumes:
+      - kafka_data:/var/lib/kafka/data"
+
+  producer:
+    build: .
+    container_name: kafka_producer
+    depends_on:
       - kafka
     environment:
-      DATABASE_URL: "postgresql://user:password@postgres_db:5432/stock_data"
       KAFKA_BROKER: "kafka:9092"
-    volumes:
-      - .:/app
-    # command: ["python", "main.py"]/
-    
+    command: ["python3", "producer.py"]
+
+  consumer:
+    build: .
+    container_name: kafka_consumer
+    depends_on:
+      - kafka
+      - postgres
+    environment:
+      KAFKA_BROKER: "kafka:9092"
+      DATABASE_URL: "postgresql://user:123@postgres_db:5432/data"
+    command: ["python3", "consumer.py"]
+
+volumes:
+  postgres_data:
+    driver: local
+  zookeeper_data:
+    driver: local
+  kafka_data:
+    driver: local
+
+
+  # app:
+  #   build : .
+  #   container_name: learn_python
+  #   depends_on :
+  #     - postgres
+  #     - kafka
+  #   environment:
+  #     DATABASE_URL: "postgresql://user:password@postgres_db:5432/stock_data"
+  #     KAFKA_BROKER: "kafka:9092"
+  #   volumes:
+  #     - .:/app
+  #   # command: ["python", "main.py"]/
+# volumes:
+#   postgres_data:
+#     driver: local
+#   zookeeper_data:
+#     driver: local
+#   kafka_data:
+#     driver: local
+
+
+# services:
+#   postgres:
+#     image: postgres:latest
+#     container_name: postgres_db
+#     environment:
+#       POSTGRES_USER: user
+#       POSTGRES_PASSWORD: 123
+#       POSTGRES_DB: data
+#     ports:
+#       - "5432:5432"
+#     volumes:
+#       - postgres_data:/var/lib/postgresql/data
+
+#   zookeeper:
+#     image: confluentinc/cp-zookeeper:latest
+#     container_name: zookeeper
+#     environment:
+#       ZOOKEEPER_CLIENT_PORT: 2181
+#     ports:
+#       - "2181:2181"
+#     volumes:
+#       - zookeeper_data:/var/lib/zookeeper
+
+#   kafka:
+#     image: confluentinc/cp-kafka:latest
+#     container_name: kafka_broker
+#     environment:
+#       KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
+#       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:9092
+#       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+#     ports:
+#       - "9092:9092"
+#     volumes:
+#       - kafka_data:/var/lib/kafka/data
+#     depends_on:
+#       - zookeeper
+
+#   # app:
+#   #   build: .
+#   #   container_name: learn_python
+#   #   depends_on:
+#   #     - postgres
+#   #     - kafka
+#   #   environment:
+#   #     DATABASE_URL: "postgresql://user:123@postgres_db:5432/data"
+#   #     KAFKA_BROKER: "kafka:9092"
+#   #   volumes:
+#   #     - .:/app
+#   #   # command: ["python", "main.py"] 
+
+# volumes:
+#   postgres_data:
+#     driver: local
+#   zookeeper_data:
+#     driver: local
+#   kafka_data:
+#     driver: local
